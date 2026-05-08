@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- TITLE: replace with your headline (or a working slug). -->
+  <title></title>
+
+  <style>
+    /* Minimal defaults. Override, replace, or delete entirely.
+       Make typographic and color choices that suit your story —
+       don't let this stylesheet decide them for you. */
+    body   { margin: 0; font-family: Georgia, serif; line-height: 1.5; color: #111; background: #fff; }
+    main   { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    figure { margin: 2rem 0; }
+    svg    { width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+<main>
+
+
+  <!-- HEADLINE
+       A specific, declarative statement of what this graphic shows.
+       Not a topic ("Climate change") but a claim or finding the
+       evidence supports. -->
+
+
+  <!-- DEK / STANDFIRST
+       One or two sentences. Frame the stakes. Why does this matter,
+       and to whom? -->
+
+
+  <!-- BYLINE
+       Your name. Affiliation if relevant. Publication date. -->
+
+
+  <figure>
+
+    <!-- The graphic renders here.
+         Approach 1 (Plot) and Approach 2 (D3) mount into this div.
+         Approach 3 (hand-coded SVG): replace this div with an <svg>
+         element written directly in the HTML. -->
+    <div id="viz"></div>
+
+
+    <!-- CAPTION
+         A reading aid. Name the comparison being made. Tell the
+         reader what to look for, not just what they're looking at. -->
+
+
+    <!-- SOURCE LINE
+         "Source: ..." Specific. Versioned if your data has versions.
+         Include retrieval date for live or scraped data. -->
+
+  </figure>
+
+
+  <!-- METHODOLOGY NOTE
+       How was this data produced? What was excluded? What context
+       must travel with this graphic so it isn't misread?
+       This is where Trace's concerns live in the published artifact. -->
+
+
+</main>
+
+
+<!-- =================================================================
+     DATA
+     Replace the contents of this script block with your own data.
+     Inline JSON keeps the file self-contained. If your dataset is
+     large, consider summarizing or aggregating before embedding —
+     the goal is a single archivable HTML file.
+     ================================================================= -->
+<script id="data" type="application/json">
+[
+  {"category": "A", "value": 12},
+  {"category": "B", "value": 19},
+  {"category": "C", "value":  7},
+  {"category": "D", "value": 23}
+]
+</script>
+
+
+<!-- =================================================================
+     APPROACH 1 — Observable Plot
+     Declarative, high-level. Best for getting to a publishable chart
+     quickly using standard chart types. One line of code per mark.
+     Documentation: https://observablehq.com/plot/
+     Uncomment the block below to use.
+     ================================================================= -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+<script type="module">
+  const data = JSON.parse(document.getElementById('data').textContent);
+
+  const chart = Plot.plot({
+    marks: [
+      Plot.barY(data, { x: "category", y: "value" })
+    ]
+  });
+
+  document.getElementById('viz').appendChild(chart);
+</script>
+-->
+
+
+<!-- =================================================================
+     APPROACH 2 — D3.js
+     Imperative, low-level. Maximum control over every mark and axis.
+     Best for custom encodings, unusual shapes, or anything that
+     doesn't fit a standard chart type.
+     Documentation: https://d3js.org/
+     Uncomment the block below to use.
+     ================================================================= -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+  const data = JSON.parse(document.getElementById('data').textContent);
+
+  const width = 640;
+  const height = 400;
+  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+
+  const svg = d3.select('#viz').append('svg')
+    .attr('viewBox', `0 0 ${width} ${height}`);
+
+  const x = d3.scaleBand()
+    .domain(data.map(d => d.category))
+    .range([margin.left, width - margin.right])
+    .padding(0.15);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.value)]).nice()
+    .range([height - margin.bottom, margin.top]);
+
+  svg.selectAll('rect')
+    .data(data)
+    .join('rect')
+      .attr('x', d => x(d.category))
+      .attr('y', d => y(d.value))
+      .attr('width', x.bandwidth())
+      .attr('height', d => y(0) - y(d.value))
+      .attr('fill', '#444');
+
+  svg.append('g')
+    .attr('transform', `translate(0,${height - margin.bottom})`)
+    .call(d3.axisBottom(x));
+
+  svg.append('g')
+    .attr('transform', `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y));
+</script>
+-->
+
+
+<!-- =================================================================
+     APPROACH 3 — Hand-coded SVG
+     No library. You write the SVG directly and compute coordinates
+     yourself. Slow, but pedagogically powerful: every mark is a
+     deliberate choice. Best fit for the autographic spirit — a
+     hand-made graphic is itself a kind of evidentiary trace.
+
+     For this approach, replace the <div id="viz"></div> in the
+     <figure> above with SVG written inline. The block below is an
+     example of what that SVG might look like, mapping the sample
+     data to a bar chart by hand:
+
+       A: 12 → bar height 120
+       B: 19 → bar height 190
+       C:  7 → bar height  70
+       D: 23 → bar height 230
+
+     Uncomment to study; then move the SVG up into the <figure>.
+     ================================================================= -->
+<!--
+<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40"  y="280" width="100" height="120" fill="#444" />
+  <rect x="180" y="210" width="100" height="190" fill="#444" />
+  <rect x="320" y="330" width="100" height="70"  fill="#444" />
+  <rect x="460" y="170" width="100" height="230" fill="#444" />
+</svg>
+-->
+
+
+<!-- =================================================================
+     YOUR CODE
+     Uncomment one approach above and modify it, or write your own
+     here. Delete the unused approaches before submission so the
+     file you turn in contains only the code that actually runs.
+     ================================================================= -->
+
+
+</body>
+</html>
