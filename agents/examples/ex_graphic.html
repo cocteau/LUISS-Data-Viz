@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bertin accident constructions — rebuilt</title>
+<style>
+  :root { --ink:#111; --muted:#666; --paper:#fbfaf7; --panel:#fff; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family: Georgia, 'Times New Roman', serif; line-height:1.45; }
+  main { max-width:1080px; margin:32px auto 56px; padding:0 18px; }
+  h1 { margin:0 0 8px; font-size:clamp(34px,5vw,66px); line-height:.95; letter-spacing:-.04em; }
+  h2 { margin:0 0 8px; font-size:22px; }
+  p { max-width:780px; }
+  .dek { font-size:18px; color:#333; }
+  .meta, .note { color:var(--muted); font-size:14px; }
+  .grid { display:grid; grid-template-columns:1fr; gap:18px; margin-top:26px; }
+  figure { margin:0; padding:18px; background:var(--panel); border:1px solid #d8d8d8; box-shadow:0 1px 12px rgba(0,0,0,.05); }
+  figure.wide { grid-column:1 / -1; }
+  svg { width:100%; height:auto; display:block; }
+  figcaption { margin-top:10px; color:#444; font-size:15px; }
+  .label { font-size:16px; fill:#111; }
+  .value { font-size:15px; fill:#555; }
+  .tiny { font-size:13px; fill:#666; }
+  @media (min-width:900px) { .grid { grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Bertin rebuilt from four numbers</h1>
+  <p class="dek">Three constructions from the same tiny dataset: traffic-accident victims in France in 1958 by vehicle category. This version is rebuilt from scratch so the circle and cross examples follow the geometry of Bertin’s page more closely.</p>
+  <p class="meta">Data: pedestrians 28,951; bicycles 17,247; motorcycles 74,887; four-wheeled vehicles 63,071.</p>
+
+  <section class="grid">
+    <figure>
+      <h2>1. Observable Plot — ordinary comparison</h2>
+      <div id="plot"></div>
+      <figcaption>A plain bar chart uses aligned lengths and a shared baseline. It is the most readable version if the point is magnitude comparison.</figcaption>
+    </figure>
+
+    <figure>
+      <h2>2. D3 — bottom-tangent circles</h2>
+      <div id="circles"></div>
+      <figcaption>The circles are area-scaled and all share one exact bottommost point. The faint dot marks the common tangent point.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <h2>3. Hand-coded SVG — cross construction</h2>
+      <svg viewBox="0 0 960 470" role="img" aria-labelledby="crossTitle crossDesc" xmlns="http://www.w3.org/2000/svg">
+        <title id="crossTitle">Cross construction of four traffic accident categories</title>
+        <desc id="crossDesc">Four hatched bars sit around a central empty square. The bars do not overlap: bicycles above, motorcycles below, four-wheeled vehicles left, pedestrians right.</desc>
+        <defs>
+          <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#111" stroke-width="2" />
+          </pattern>
+        </defs>
+
+        <rect width="960" height="470" fill="#fff" />
+
+        <!-- Rebuilt geometry.
+             Center empty square: x 464–496, y 204–236.
+             No bar enters this square. Each bar starts or ends exactly at it. -->
+        <rect x="464" y="204" width="32" height="32" fill="#fff" stroke="#111" stroke-width="1.5" />
+
+        <!-- Four-wheeled vehicles: left arm, length proportional to 63,071 -->
+        <rect x="270" y="204" width="194" height="32" fill="url(#crossHatch)" stroke="#111" stroke-width="1.5" />
+        <text x="250" y="202" text-anchor="end" class="label">Four-wheeled</text>
+        <text x="250" y="224" text-anchor="end" class="label">vehicles</text>
+        <text x="250" y="250" text-anchor="end" class="value">63,071</text>
+
+        <!-- Pedestrians: right arm, length proportional to 28,951 -->
+        <rect x="496" y="204" width="89" height="32" fill="url(#crossHatch)" stroke="#111" stroke-width="1.5" />
+        <text x="606" y="202" class="label">Pedestrians</text>
+        <text x="606" y="228" class="value">28,951</text>
+
+        <!-- Bicycles: top arm, bottom aligned to top of center square -->
+        <rect x="464" y="151" width="32" height="53" fill="url(#crossHatch)" stroke="#111" stroke-width="1.5" />
+        <text x="480" y="103" text-anchor="middle" class="label">Bicycles</text>
+        <text x="480" y="128" text-anchor="middle" class="value">17,247</text>
+
+        <!-- Motorcycles: bottom arm, top aligned to bottom of center square -->
+        <rect x="464" y="236" width="32" height="230" fill="url(#crossHatch)" stroke="#111" stroke-width="1.5" />
+        <text x="480" y="355" text-anchor="middle" class="label">Motorcycles</text>
+        <text x="480" y="382" text-anchor="middle" class="value">74,887</text>
+
+        <line x1="270" y1="236" x2="585" y2="236" stroke="#ccc" stroke-width="1" />
+        <line x1="496" y1="151" x2="496" y2="466" stroke="#ccc" stroke-width="1" />
+        <text x="22" y="446" class="tiny">SVG only. Arm length is proportional to count; the center is deliberately left open so the bars meet but do not overlap.</text>
+      </svg>
+      <figcaption>The bicycle bar now sits between the left/right arms and the motorcycle arm. Each arm touches the same central construction without crossing into another bar.</figcaption>
+    </figure>
+  </section>
+
+  <p class="note"><strong>Method note.</strong> This is a historical/pedagogical reconstruction, not a current road-safety analysis. The four counts are enough to compare magnitudes; they are not enough to explain causes, risk, exposure, or change over time.</p>
+</main>
+
+<script id="data" type="application/json">
+[
+  {"category":"Pedestrians", "value":28951},
+  {"category":"Bicycles", "value":17247},
+  {"category":"Motorcycles", "value":74887},
+  {"category":"Four-wheeled vehicles", "value":63071}
+]
+</script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+<script>
+const data = JSON.parse(document.getElementById('data').textContent);
+const total = d3.sum(data, d => d.value);
+data.forEach(d => d.share = d.value / total);
+
+const plot = Plot.plot({
+  width: 500,
+  height: 340,
+  marginLeft: 56,
+  marginBottom: 74,
+  y: {grid:true, label:'Victims'},
+  x: {label:null, tickRotate:-28},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.barY(data, {x:'category', y:'value', fill:'#222'}),
+    Plot.text(data, {x:'category', y:'value', text:d => d.value.toLocaleString('en-US'), dy:-8, fontSize:12})
+  ]
+});
+document.getElementById('plot').appendChild(plot);
+
+(function(){
+  const width = 500, height = 340;
+  const svg = d3.select('#circles').append('svg').attr('viewBox', `0 0 ${width} ${height}`);
+  const maxR = 118;
+  const radius = d3.scaleSqrt().domain([0, d3.max(data, d => d.value)]).range([0, maxR]);
+  const ordered = [...data].sort((a,b) => b.value - a.value);
+  const tangent = {x: 250, y: 292};
+
+  svg.append('rect').attr('width', width).attr('height', height).attr('fill', '#fff');
+  svg.append('line')
+    .attr('x1', tangent.x).attr('x2', tangent.x)
+    .attr('y1', 42).attr('y2', tangent.y)
+    .attr('stroke', '#d0d0d0').attr('stroke-dasharray', '4 5');
+
+  ordered.forEach(d => {
+    const r = radius(d.value);
+    svg.append('circle')
+      .attr('cx', tangent.x)
+      .attr('cy', tangent.y - r)
+      .attr('r', r)
+      .attr('fill', 'none')
+      .attr('stroke', '#111')
+      .attr('stroke-width', 2);
+  });
+
+  svg.append('circle')
+    .attr('cx', tangent.x).attr('cy', tangent.y).attr('r', 5)
+    .attr('fill', '#111');
+
+  const labelPositions = {
+    'Motorcycles': {x: 250, y: 72},
+    'Four-wheeled vehicles': {x: 202, y: 124},
+    'Pedestrians': {x: 308, y: 178},
+    'Bicycles': {x: 250, y: 226}
+  };
+
+  ordered.forEach(d => {
+    const p = labelPositions[d.category];
+    const text = d.category === 'Four-wheeled vehicles' ? 'Four-wheeled vehicles' : d.category;
+    svg.append('text').attr('x', p.x).attr('y', p.y).attr('text-anchor', 'middle').attr('class', 'label').text(text);
+    svg.append('text').attr('x', p.x).attr('y', p.y + 20).attr('text-anchor', 'middle').attr('class', 'value').text(`${(100*d.share).toFixed(1)}%`);
+  });
+
+  svg.append('text').attr('x', 20).attr('y', 323).attr('class', 'tiny')
+    .text('All four circles: cx = 250; bottom = 292. Only radius changes.');
+})();
+</script>
+</body>
+</html>
