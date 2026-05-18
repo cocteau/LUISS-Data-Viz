@@ -7,6 +7,10 @@ Copy system-prompt.md into the "instructions" section of your AI project (Claude
 
 And following this '@all' mention, you  then invoke particular agents for particular tasks. so...
 
-@trace - if you wanted to provide new evidence...or
+@Trace - if you wanted to provide new evidence...or
 
 @VAE - when your framing shifts
+
+@Formal - to understand how information is being encoded in the graphic
+
+@Coder - to write the code underlying your graphic
