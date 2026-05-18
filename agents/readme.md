@@ -1,3 +1,1 @@
-####Agent Exercise
-
-A work in progress.
+Agent Exercise - A work in progress.
